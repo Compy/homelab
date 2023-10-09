@@ -1,0 +1,234 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: synapse-additional1-worker
+  name: additional1-svc
+  namespace: matrix-synapse
+spec:
+  clusterIP: None
+  ports:
+  - name: http-repl
+    port: 9094
+    protocol: TCP
+    targetPort: 9094
+  - name: http-federation
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  - name: metrics
+    port: 9091
+    protocol: TCP
+    targetPort: 9091
+  selector:
+    app: synapse-additional1-worker
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: synapse-presence-worker
+  name: presence-svc
+  namespace: matrix-synapse
+spec:
+  clusterIP: None
+  ports:
+  - name: http-repl
+    port: 9100
+    protocol: TCP
+    targetPort: 9100
+  - name: http-federation
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  - name: metrics
+    port: 9091
+    protocol: TCP
+    targetPort: 9091
+  selector:
+    app: synapse-presence-worker
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: synapse-generic-worker1
+  name: generic-worker-svc-1
+  namespace: matrix-synapse
+spec:
+  clusterIP: None
+  ports:
+  - name: http-repl
+    port: 9094
+    protocol: TCP
+    targetPort: 9094
+  - name: http-federation
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  - name: metrics
+    port: 9091
+    protocol: TCP
+    targetPort: 9091
+  selector:
+    app: synapse-generic-worker1
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: synapse-generic-worker2
+  name: generic-worker-svc-2
+  namespace: matrix-synapse
+spec:
+  clusterIP: None
+  ports:
+  - name: http-repl
+    port: 9094
+    protocol: TCP
+    targetPort: 9094
+  - name: http-federation
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  - name: metrics
+    port: 9091
+    protocol: TCP
+    targetPort: 9091
+  selector:
+    app: synapse-generic-worker2
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: synapse-generic-worker3
+  name: generic-worker-svc-3
+  namespace: matrix-synapse
+spec:
+  clusterIP: None
+  ports:
+  - name: http-repl
+    port: 9094
+    protocol: TCP
+    targetPort: 9094
+  - name: http-federation
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  - name: metrics
+    port: 9091
+    protocol: TCP
+    targetPort: 9091
+  selector:
+    app: synapse-generic-worker3
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: synapse-generic-worker4
+  name: generic-worker-svc-4
+  namespace: matrix-synapse
+spec:
+  clusterIP: None
+  ports:
+  - name: http-repl
+    port: 9094
+    protocol: TCP
+    targetPort: 9094
+  - name: http-federation
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  - name: metrics
+    port: 9091
+    protocol: TCP
+    targetPort: 9091
+  selector:
+    app: synapse-generic-worker4
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: synapse-federation-sender-1
+  name: synapse-federation-sender-1
+  namespace: matrix-synapse
+spec:
+  clusterIP: None
+  ports:
+  - name: http-repl
+    port: 9094
+    protocol: TCP
+    targetPort: 9094
+  - name: http-federation
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  - name: metrics
+    port: 9091
+    protocol: TCP
+    targetPort: 9091
+  selector:
+    app: synapse-federation-sender-1
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: synapse-federation-sender-2
+  name: synapse-federation-sender-2
+  namespace: matrix-synapse
+spec:
+  clusterIP: None
+  ports:
+  - name: http-repl
+    port: 9094
+    protocol: TCP
+    targetPort: 9094
+  - name: http-federation
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  - name: metrics
+    port: 9091
+    protocol: TCP
+    targetPort: 9091
+  selector:
+    app: synapse-federation-sender-2
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: synapse-federation-sender-3
+  name: synapse-federation-sender-3
+  namespace: matrix-synapse
+spec:
+  clusterIP: None
+  ports:
+  - name: http-repl
+    port: 9094
+    protocol: TCP
+    targetPort: 9094
+  - name: http-federation
+    port: 9090
+    protocol: TCP
+    targetPort: 9090
+  - name: metrics
+    port: 9091
+    protocol: TCP
+    targetPort: 9091
+  selector:
+    app: synapse-federation-sender-3
+  type: ClusterIP

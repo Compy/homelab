@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  delegation-default.conf: "server {\n\tlisten       80;\n\tlocation / {\n\t\treturn
+    200;\n\t}\n\tlocation /.well-known/matrix/server {\n\t\tdefault_type application/json;\n\t\treturn
+    200 '{\"m.server\": \"matrix.hazenet.org:443\"}';\n\t}\n\tlocation /.well-known/matrix/client
+    {\n\t\tdefault_type application/json;\n\t\treturn 200 '{\"m.homeserver\": { \"base_url\":
+    \"https://matrix.hazenet.org\" }}';\n        }\n}"
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: delegation-conf

@@ -1,0 +1,19 @@
+id: 4ec4e898d92cf0ca0389b3c2e5f57e71381e307ffd8eabeea3fc6e9b3dce9166
+hs_token: ab945d11cf6e88035397977b2b2a8b45439d15a215006e4063e787371a5f93fe
+as_token: 3bffbbb968751d26f22f5ea95b404a84a54d16ea71e394f83bb904149b31b866
+url: http://69.164.194.127:9999
+sender_localpart: ircbridge
+de.sorunome.msc2409.push_ephemeral: true
+protocols:
+  - irc
+namespaces:
+  rooms:
+    - exclusive: false
+      regex: '!kieouiJuedJoxtVdaG:localhost'
+  aliases:
+    - exclusive: true
+      regex: .*:hazenet\.org
+  users:
+    - exclusive: true
+      regex: '@irc_.*:hazenet\.org'
+rate_limited: false

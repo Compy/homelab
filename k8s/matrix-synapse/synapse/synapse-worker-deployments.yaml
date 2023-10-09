@@ -1,0 +1,531 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synapse-generic-worker1
+  namespace: matrix-synapse
+spec:
+  selector:
+    matchLabels:
+      app: synapse-generic-worker1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: synapse-generic-worker1
+    spec:
+      containers:
+      - image: matrixdotorg/synapse:v1.82.0
+        name: synapse-generic-worker1
+        env:
+        - name: SYNAPSE_WORKER
+          value: synapse.app.generic_worker
+        args:
+        - run
+        - --config-path=/data/homeserver.yaml
+        - --config-path=/data/workers/generic_worker1.yaml
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: synapse-configs
+          mountPath: /data/homeserver.yaml
+          subPath: homeserver.yaml
+        - name: synapse-configs
+          mountPath: /data/appservice-registration-irc.yaml
+          subPath: appservice-registration-irc.yaml
+        - name: synapse-configs
+          mountPath: /data/homeserver.signing.key
+          subPath: homeserver.signing.key
+        - name: configs
+          mountPath: /data/workers
+        ports:
+          - containerPort: 9094 # replication
+          - containerPort: 9090 # federation
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: synapse-pvc
+      - name: configs
+        configMap:
+          name: synapse-worker-config
+      - name: synapse-configs
+        configMap:
+          name: synapse-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synapse-generic-worker2
+  namespace: matrix-synapse
+spec:
+  selector:
+    matchLabels:
+      app: synapse-generic-worker2
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: synapse-generic-worker2
+    spec:
+      containers:
+      - image: matrixdotorg/synapse:v1.82.0
+        name: synapse-generic-worker2
+        env:
+        - name: SYNAPSE_WORKER
+          value: synapse.app.generic_worker
+        args:
+        - run
+        - --config-path=/data/homeserver.yaml
+        - --config-path=/data/workers/generic_worker2.yaml
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: synapse-configs
+          mountPath: /data/homeserver.yaml
+          subPath: homeserver.yaml
+        - name: synapse-configs
+          mountPath: /data/appservice-registration-irc.yaml
+          subPath: appservice-registration-irc.yaml
+        - name: synapse-configs
+          mountPath: /data/homeserver.signing.key
+          subPath: homeserver.signing.key
+        - name: configs
+          mountPath: /data/workers
+        ports:
+          - containerPort: 9094 # replication
+          - containerPort: 9090 # federation
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: synapse-pvc
+      - name: configs
+        configMap:
+          name: synapse-worker-config
+      - name: synapse-configs
+        configMap:
+          name: synapse-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synapse-generic-worker3
+  namespace: matrix-synapse
+spec:
+  selector:
+    matchLabels:
+      app: synapse-generic-worker3
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: synapse-generic-worker3
+    spec:
+      containers:
+      - image: matrixdotorg/synapse:v1.82.0
+        name: synapse-generic-worker3
+        env:
+        - name: SYNAPSE_WORKER
+          value: synapse.app.generic_worker
+        args:
+        - run
+        - --config-path=/data/homeserver.yaml
+        - --config-path=/data/workers/generic_worker3.yaml
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: synapse-configs
+          mountPath: /data/homeserver.yaml
+          subPath: homeserver.yaml
+        - name: synapse-configs
+          mountPath: /data/appservice-registration-irc.yaml
+          subPath: appservice-registration-irc.yaml
+        - name: synapse-configs
+          mountPath: /data/homeserver.signing.key
+          subPath: homeserver.signing.key
+        - name: configs
+          mountPath: /data/workers
+        ports:
+          - containerPort: 9094 # replication
+          - containerPort: 9090 # federation
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: synapse-pvc
+      - name: configs
+        configMap:
+          name: synapse-worker-config
+      - name: synapse-configs
+        configMap:
+          name: synapse-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synapse-generic-worker4
+  namespace: matrix-synapse
+spec:
+  selector:
+    matchLabels:
+      app: synapse-generic-worker4
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: synapse-generic-worker4
+    spec:
+      containers:
+      - image: matrixdotorg/synapse:v1.82.0
+        name: synapse-generic-worker4
+        env:
+        - name: SYNAPSE_WORKER
+          value: synapse.app.generic_worker
+        args:
+        - run
+        - --config-path=/data/homeserver.yaml
+        - --config-path=/data/workers/generic_worker4.yaml
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: synapse-configs
+          mountPath: /data/homeserver.yaml
+          subPath: homeserver.yaml
+        - name: synapse-configs
+          mountPath: /data/appservice-registration-irc.yaml
+          subPath: appservice-registration-irc.yaml
+        - name: synapse-configs
+          mountPath: /data/homeserver.signing.key
+          subPath: homeserver.signing.key
+        - name: configs
+          mountPath: /data/workers
+        ports:
+          - containerPort: 9094 # replication
+          - containerPort: 9090 # federation
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: synapse-pvc
+      - name: configs
+        configMap:
+          name: synapse-worker-config
+      - name: synapse-configs
+        configMap:
+          name: synapse-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synapse-additional1-worker
+  namespace: matrix-synapse
+spec:
+  selector:
+    matchLabels:
+      app: synapse-additional1-worker
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: synapse-additional1-worker
+    spec:
+      containers:
+      - image: matrixdotorg/synapse:v1.82.0
+        name: synapse-additional1-worker
+        env:
+        - name: SYNAPSE_WORKER
+          value: synapse.app.generic_worker
+        args:
+        - run
+        - --config-path=/data/homeserver.yaml
+        - --config-path=/data/workers/additional1.yaml
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: synapse-configs
+          mountPath: /data/homeserver.yaml
+          subPath: homeserver.yaml
+        - name: synapse-configs
+          mountPath: /data/appservice-registration-irc.yaml
+          subPath: appservice-registration-irc.yaml
+        - name: synapse-configs
+          mountPath: /data/homeserver.signing.key
+          subPath: homeserver.signing.key
+        - name: configs
+          mountPath: /data/workers
+        ports:
+          - containerPort: 9094 # replication
+          - containerPort: 9090 # federation
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: synapse-pvc
+      - name: configs
+        configMap:
+          name: synapse-worker-config
+      - name: synapse-configs
+        configMap:
+          name: synapse-config
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: synapse-presence-worker
+#   namespace: matrix-synapse
+# spec:
+#   selector:
+#     matchLabels:
+#       app: synapse-presence-worker
+#   strategy:
+#     type: Recreate
+#   template:
+#     metadata:
+#       labels:
+#         app: synapse-presence-worker
+#     spec:
+#       containers:
+#       - image: matrixdotorg/synapse:v1.82.0
+#         name: synapse-presence-worker
+#         env:
+#         - name: SYNAPSE_WORKER
+#           value: synapse.app.generic_worker
+#         args:
+#         - run
+#         - --config-path=/data/homeserver.yaml
+#         - --config-path=/data/workers/presence.yaml
+#         volumeMounts:
+#         - name: data
+#           mountPath: /data
+#         - name: synapse-configs
+#           mountPath: /data/homeserver.yaml
+#           subPath: homeserver.yaml
+#         - name: synapse-configs
+#           mountPath: /data/homeserver.signing.key
+#           subPath: homeserver.signing.key
+#         - name: configs
+#           mountPath: /data/workers
+#         ports:
+#           - containerPort: 9100 # replication
+#           - containerPort: 9090 # federation
+#       volumes:
+#       - name: data
+#         persistentVolumeClaim:
+#           claimName: synapse-pvc
+#       - name: configs
+#         configMap:
+#           name: synapse-worker-config
+#       - name: synapse-configs
+#         configMap:
+#           name: synapse-config
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: synapse-federation-sender-1
+#   namespace: matrix-synapse
+# spec:
+#   selector:
+#     matchLabels:
+#       app: synapse-federation-sender-1
+#   strategy:
+#     type: Recreate
+#   template:
+#     metadata:
+#       labels:
+#         app: synapse-federation-sender-1
+#     spec:
+#       containers:
+#       - image: matrixdotorg/synapse:v1.82.0
+#         name: synapse-federation-sender-1
+#         env:
+#         - name: SYNAPSE_WORKER
+#           value: synapse.app.federation_sender
+#         args:
+#         - run
+#         - --config-path=/data/homeserver.yaml
+#         - --config-path=/data/workers/federation_sender1.yaml
+#         volumeMounts:
+#         - name: data
+#           mountPath: /data
+#         - name: synapse-configs
+#           mountPath: /data/homeserver.yaml
+#           subPath: homeserver.yaml
+#         - name: synapse-configs
+#           mountPath: /data/appservice-registration-irc.yaml
+#           subPath: appservice-registration-irc.yaml
+#         - name: synapse-configs
+#           mountPath: /data/homeserver.signing.key
+#           subPath: homeserver.signing.key
+#         - name: configs
+#           mountPath: /data/workers
+#         ports:
+#           - containerPort: 9100 # replication
+#           - containerPort: 9090 # federation
+#       volumes:
+#       - name: data
+#         persistentVolumeClaim:
+#           claimName: synapse-pvc
+#       - name: configs
+#         configMap:
+#           name: synapse-worker-config
+#       - name: synapse-configs
+#         configMap:
+#           name: synapse-config
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: synapse-federation-sender-2
+#   namespace: matrix-synapse
+# spec:
+#   selector:
+#     matchLabels:
+#       app: synapse-federation-sender-2
+#   strategy:
+#     type: Recreate
+#   template:
+#     metadata:
+#       labels:
+#         app: synapse-federation-sender-2
+#     spec:
+#       containers:
+#       - image: matrixdotorg/synapse:v1.82.0
+#         name: synapse-federation-sender-2
+#         env:
+#         - name: SYNAPSE_WORKER
+#           value: synapse.app.federation_sender
+#         args:
+#         - run
+#         - --config-path=/data/homeserver.yaml
+#         - --config-path=/data/workers/federation_sender2.yaml
+#         volumeMounts:
+#         - name: data
+#           mountPath: /data
+#         - name: synapse-configs
+#           mountPath: /data/homeserver.yaml
+#           subPath: homeserver.yaml
+#         - name: synapse-configs
+#           mountPath: /data/homeserver.signing.key
+#           subPath: homeserver.signing.key
+#         - name: configs
+#           mountPath: /data/workers
+#         ports:
+#           - containerPort: 9100 # replication
+#           - containerPort: 9090 # federation
+#       volumes:
+#       - name: data
+#         persistentVolumeClaim:
+#           claimName: synapse-pvc
+#       - name: configs
+#         configMap:
+#           name: synapse-worker-config
+#       - name: synapse-configs
+#         configMap:
+#           name: synapse-config
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: synapse-federation-sender-3
+#   namespace: matrix-synapse
+# spec:
+#   selector:
+#     matchLabels:
+#       app: synapse-federation-sender-3
+#   strategy:
+#     type: Recreate
+#   template:
+#     metadata:
+#       labels:
+#         app: synapse-federation-sender-3
+#     spec:
+#       containers:
+#       - image: matrixdotorg/synapse:v1.82.0
+#         name: synapse-federation-sender-3
+#         env:
+#         - name: SYNAPSE_WORKER
+#           value: synapse.app.federation_sender
+#         args:
+#         - run
+#         - --config-path=/data/homeserver.yaml
+#         - --config-path=/data/workers/federation_sender3.yaml
+#         volumeMounts:
+#         - name: data
+#           mountPath: /data
+#         - name: synapse-configs
+#           mountPath: /data/homeserver.yaml
+#           subPath: homeserver.yaml
+#         - name: synapse-configs
+#           mountPath: /data/homeserver.signing.key
+#           subPath: homeserver.signing.key
+#         - name: configs
+#           mountPath: /data/workers
+#         ports:
+#           - containerPort: 9100 # replication
+#           - containerPort: 9090 # federation
+#       volumes:
+#       - name: data
+#         persistentVolumeClaim:
+#           claimName: synapse-pvc
+#       - name: configs
+#         configMap:
+#           name: synapse-worker-config
+#       - name: synapse-configs
+#         configMap:
+#           name: synapse-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synapse-pusher-worker
+  namespace: matrix-synapse
+spec:
+  selector:
+    matchLabels:
+      app: synapse-pusher-worker
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: synapse-pusher-worker
+    spec:
+      containers:
+      - image: matrixdotorg/synapse:v1.82.0
+        name: synapse-pusher-worker
+        env:
+        - name: SYNAPSE_WORKER
+          value: synapse.app.pusher
+        args:
+        - run
+        - --config-path=/data/homeserver.yaml
+        - --config-path=/data/workers/pusher.yaml
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: synapse-configs
+          mountPath: /data/homeserver.yaml
+          subPath: homeserver.yaml
+        - name: synapse-configs
+          mountPath: /data/appservice-registration-irc.yaml
+          subPath: appservice-registration-irc.yaml
+        - name: synapse-configs
+          mountPath: /data/homeserver.signing.key
+          subPath: homeserver.signing.key
+        - name: configs
+          mountPath: /data/workers
+        ports:
+          - containerPort: 9094 # replication
+          - containerPort: 9090 # federation
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: synapse-pvc
+      - name: configs
+        configMap:
+          name: synapse-worker-config
+      - name: synapse-configs
+        configMap:
+          name: synapse-config

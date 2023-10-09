@@ -1,0 +1,156 @@
+apiVersion: v1
+data:
+  synapse-lb-proxy-settings.conf: |-
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    port_in_redirect    off;
+    proxy_redirect      off;
+    proxy_connect_timeout 360;
+    proxy_read_timeout 600;
+    proxy_send_timeout 600;
+
+    #proxy_buffering    off;
+    proxy_buffers 8 16k;
+    proxy_buffer_size 32k;
+  synapse-lb.conf: "#\n# This configuration file is for load balancing across the
+    various backend synapse\n# worker processes.\n#\n\n###################################################################################\n#
+    UPSTREAM CONFIGURATION\n###################################################################################\nupstream
+    generic_worker_ih {\n    ip_hash;\n    server generic-worker-svc-1:9090;\n    server
+    generic-worker-svc-2:9090;\n    server generic-worker-svc-3:9090;\n    server
+    generic-worker-svc-4:9090;\n}\n\nupstream generic_worker_lc {\n    least_conn;\n
+    \   server generic-worker-svc-1:9090;\n    server generic-worker-svc-2:9090;\n
+    \   server generic-worker-svc-3:9090;\n    server generic-worker-svc-4:9090;\n}\n\nupstream
+    additional {\n    least_conn;\n    server additional1-svc:9090;\n}\n\n# upstream
+    presence {\n#     least_conn;\n#     server presence-svc:9090;\n# }\n# END UPSTREAM
+    CONFIGS\n\nserver {\n\tlisten 80 default_server;\n\tlisten [::]:80 default_server;\n\n
+    \   # Generic Worker\n    #\n    # note:\n    # http://localhost:8083  -> matrix-synchrotron-balancer\n
+    \   # generic_worker_lc      -> upstream_proxy (least_conn)\n    # generic_worker_ih
+    \     -> upstream_proxy (ip_hash)\n    #\n    #/_matrix/client/r0/rooms/!ehXvUhWNASUkSLvAGP%3Amatrix.org/typing/%40compy%3Ahazenet.org\n
+    \   ## Sync requests\n    location ~* ^/_matrix/client/(v2_alpha|r0|v3)/sync$
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|v2_alpha|r0)/events$ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0)/initialSync$ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0)/rooms/[^/]+/initialSync$
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n\n    ## Federation requests\n    location ~* ^/_matrix/federation/v1/event/
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v1/state/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v1/state_ids/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v1/backfill/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v1/get_missing_events/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v1/publicRooms {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v1/query/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v1/make_join/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v1/make_leave/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v1/send_join/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v2/send_join/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v1/send_leave/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v2/send_leave/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v1/invite/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v2/invite/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v1/query_auth/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v1/event_auth/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v1/exchange_third_party_invite/
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v1/user/devices/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/federation/v1/get_groups_publicised$ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/key/v2/query {\n        proxy_pass http://generic_worker_lc;\n
+    \       include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n    }\n\n\n
+    \   ## Inbound federation transaction request\n    location ~* ^/_matrix/federation/v1/send/
+    {\n        proxy_pass http://generic_worker_ih;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n\n    ## Client API requests\n    #location ~* ^/_matrix/client/(api/v1|r0|unstable)/createRoom$
+    {\n    #\tproxy_pass http://generic_worker_lc;\n    #\tinclude /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   #}\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable|v3)/publicRooms$
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable|v3)/rooms/.*/joined_members$
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable|v3)/rooms/.*/context/.*$
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable|v3)/rooms/.*/members$
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable|v3)/rooms/.*/state$
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable|v3)/rooms/.*/typing/.*$
+    {\n        proxy_pass http://additional;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable|v3)/sendToDevice/.*$
+    {\n        proxy_pass http://additional;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/account/3pid$ {\n
+    \       proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/devices$ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/keys/query$ {\n
+    \       proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/keys/changes$ {\n
+    \       proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/versions$ {\n        proxy_pass http://generic_worker_lc;\n
+    \       include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n    }\n\n    location
+    ~* ^/_matrix/client/(api/v1|r0|unstable)/voip/turnServer$ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/joined_groups$
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/publicised_groups$
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/publicised_groups/
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/rooms/.*/event/
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(r0|v3|unstable)/rooms/.*/messages$
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/joined_rooms$ {\n
+    \       proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/search$ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n\n    ## Registration/login requests\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/login$
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(r0|unstable)/register$ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(r0|unstable)/auth/.*/fallback/web$
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n\n    ## Event sending requests\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/rooms/.*/redact
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/rooms/.*/send {\n
+    \       proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/rooms/.*/state/
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/rooms/.*/(join|invite|leave|ban|unban|kick)$
+    {\n        proxy_pass http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/join/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    location ~* ^/_matrix/client/(api/v1|r0|unstable)/profile/ {\n        proxy_pass
+    http://generic_worker_lc;\n        include /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n
+    \   }\n\n    ##########################################################################################################\n
+    \   # END GENERIC WORKER CONFIGS\n    ##########################################################################################################\n
+    \   ##\n\tlocation ~* ^(\\/_matrix|\\/_synapse\\/client) {\n\t\tproxy_pass http://synapse-master:8008;\n\t\tinclude
+    /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n\t}\n\n\t## media-repo\n\t#
+    location ^~ /_matrix/media {\n\t# \tproxy_pass http://synapse-master:8008;\n\n\t#
+    \tclient_max_body_size 100M;\n\n\t# \tproxy_set_header Host hazenet.org;\n\t#
+    \tproxy_set_header X-Real-IP $remote_addr;\n\t# \tproxy_set_header X-Forwarded-For
+    $remote_addr;\n\t# \tproxy_read_timeout 3600;\n\t# }\n\n\t##\n\tlocation / {\n\t\tproxy_pass
+    http://synapse-master:8008;\n\t\tinclude /etc/nginx/conf.d/synapse-lb-proxy-settings.conf;\n\t}\n\n}\n"
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: synapse-lb-config

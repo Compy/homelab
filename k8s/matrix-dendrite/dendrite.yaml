@@ -1,0 +1,110 @@
+version: 2
+global:
+  server_name: "spark.im"
+  private_key: matrix_key.pem
+  key_validity_period: "168h0m0s"
+  well_known_server_name: "matrix.spark.im:443"
+  trusted_third_party_id_servers:
+    - matrix.org
+    - vector.im
+  disable_federation: false
+  presence:
+    enable_inbound: false
+    enable_outbound: false
+  report_stats:
+    enabled: false
+    endpoint: https://matrix.org/report-usage-stats/push
+  server_notices:
+    enabled: false
+    local_part: "spark"
+    display_name: "Server Alerts"
+    avatar_url: ""
+    room_name: "Server Alerts"
+  jetstream:
+    addresses:
+      []
+    in_memory: false
+    storage_path: /var/dendrite/jetstream
+    topic_prefix: "Dendrite"
+  metrics:
+    enabled: false
+    basic_auth:
+      username: "metrics"
+      password: "metrics"
+  dns_cache:
+    enabled: true
+    cache_size: 4096
+    cache_lifetime: 15m
+  database:
+    connection_string: postgresql://dendrite:dendrite123@dendrite-postgresql/dendrite?sslmode=disable
+    max_open_conns: 100
+    max_idle_conns: 5
+    conn_max_lifetime: -1
+app_service_api:
+  config_files:
+    []
+client_api:
+  registration_disabled: false
+  registration_shared_secret: "moo"
+  enable_registration_captcha: true
+  recaptcha_public_key: "moo"
+  recaptcha_private_key: "moo"
+  recaptcha_bypass_secret: ""
+  recaptcha_siteverify_api: "https://www.google.com/recaptcha/api/siteverify"
+  turn:
+    turn_password: ""
+    turn_shared_secret: ""
+    turn_uris: []
+    turn_user_lifetime: ""
+    turn_username: ""
+  rate_limiting:
+    enabled: true
+    threshold: 5
+    cooloff_ms: 500
+    exempt_user_ids: 
+federation_api:
+  send_max_retries: 16
+  disable_tls_validation: false
+  key_perspectives:
+    - keys:
+      - key_id: ed25519:auto
+        public_key: Noi6WqcDj0QmPxCNQqgezwTlBKrfqehY1u2FyWP9uYw
+      - key_id: ed25519:a_RXGa
+        public_key: l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ
+      server_name: matrix.org
+  prefer_direct_fetch: false
+key_server:
+media_api:
+  base_path: "/var/dendrite/media"
+  max_file_size_bytes: 10485760
+  dynamic_thumbnails: false
+  max_thumbnail_generators: 10
+  thumbnail_sizes:
+    - height: 32
+      method: crop
+      width: 32
+    - height: 96
+      method: crop
+      width: 96
+    - height: 480
+      method: scale
+      width: 640
+mscs:
+  mscs: 
+    []
+room_server:
+sync_api:
+user_api:
+  bcrypt_cost: 10
+tracing:
+  enabled: false
+  jaeger:
+    disabled: false
+    rpc_metrics: false
+    serviceName: ""
+    tags: []
+logging:
+  - level: info
+    params:
+      path: /var/log/dendrite
+    type: file

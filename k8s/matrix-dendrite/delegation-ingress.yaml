@@ -1,0 +1,32 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, HEAD, OPTIONS, POST, PUT, PATCH, DELETE"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  name: delegation-ingress
+  namespace: matrix-dendrite
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: spark.im
+    http:
+      paths:
+      - backend:
+          service: 
+            name: delegation-service
+            port: 
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - spark.im
+    - www.spark.im
+    secretName: spark-im-tls

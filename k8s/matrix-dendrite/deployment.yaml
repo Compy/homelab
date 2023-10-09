@@ -1,0 +1,44 @@
+---
+# A deployment of the Dendrite
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dendrite
+  namespace: matrix-dendrite
+spec:
+  selector:
+    matchLabels:
+      app: dendrite
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dendrite
+    spec:
+      containers:
+      - name: dendrite
+        image: matrixdotorg/dendrite-monolith:v0.8.9
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config.json
+          subPath: config.json
+        ports:
+        - containerPort: 80
+          name: element
+          protocol: TCP
+        readinessProbe:
+            httpGet:
+                path: /
+                port: element
+            initialDelaySeconds: 2
+            periodSeconds: 3
+        livenessProbe:
+            httpGet:
+                path: /
+                port: element
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      volumes:
+      - name: config-volume
+        configMap:
+          name: element-config

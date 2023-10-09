@@ -1,0 +1,31 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: 100M
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, HEAD, OPTIONS, POST, PUT, PATCH, DELETE"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+  name: delegation-ingress
+  namespace: matrix-synapse
+spec:
+  rules:
+  - host: hazenet.org
+    http:
+      paths:
+      - backend:
+          service: 
+            name: delegation-service
+            port: 
+              number: 80
+        path: /.well-known/matrix/
+        pathType: Prefix
+  tls:
+  - hosts:
+    - hazenet.org
+    secretName: hazenet.org

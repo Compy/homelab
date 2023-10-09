@@ -1,0 +1,26 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, HEAD, OPTIONS, POST, PUT, PATCH, DELETE"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  name: dendrite-ingress
+  namespace: matrix-dendrite
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: matrix.spark.im
+    http:
+      paths:
+      - backend:
+          service: 
+            name: dendrite
+            port: 
+              number: 8008
+        path: /
+        pathType: Prefix

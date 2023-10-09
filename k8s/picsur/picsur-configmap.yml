@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: picsur-config
+  labels:
+    component: picsur
+data:
+  PICSUR_DB_HOST: postgres
+  PICSUR_DB_USERNAME: picsur
+  PICSUR_DB_PASSWORD: picsur
+  PICSUR_DB_DATABASE: picsur

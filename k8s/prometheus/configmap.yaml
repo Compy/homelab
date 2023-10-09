@@ -1,0 +1,192 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-server-conf
+  labels:
+    name: prometheus-server-conf
+  namespace: matrix-synapse
+data:
+  synapse-v2.rules: |-
+    groups:
+    - name: synapse
+      rules:
+      - record: "synapse_federation_transaction_queue_pendingEdus:total"
+        expr: "sum(synapse_federation_transaction_queue_pendingEdus or absent(synapse_federation_transaction_queue_pendingEdus)*0)"
+      - record: "synapse_federation_transaction_queue_pendingPdus:total"
+        expr:   "sum(synapse_federation_transaction_queue_pendingPdus or absent(synapse_federation_transaction_queue_pendingPdus)*0)"
+      - record: 'synapse_http_server_request_count:method'
+        labels:
+          servlet: ""
+        expr: "sum(synapse_http_server_request_count) by (method)"
+      - record: 'synapse_http_server_request_count:servlet'
+        labels:
+          method: ""
+        expr: 'sum(synapse_http_server_request_count) by (servlet)'
+
+      - record: 'synapse_http_server_request_count:total'
+        labels:
+          servlet: ""
+        expr: 'sum(synapse_http_server_request_count:by_method) by (servlet)'
+
+      - record: 'synapse_cache:hit_ratio_5m'
+        expr: 'rate(synapse_util_caches_cache:hits[5m]) / rate(synapse_util_caches_cache:total[5m])'
+      - record: 'synapse_cache:hit_ratio_30s'
+        expr: 'rate(synapse_util_caches_cache:hits[30s]) / rate(synapse_util_caches_cache:total[30s])'
+
+      - record: 'synapse_federation_client_sent'
+        labels:
+          type: "EDU"
+        expr: 'synapse_federation_client_sent_edus + 0'
+      - record: 'synapse_federation_client_sent'
+        labels:
+          type: "PDU"
+        expr: 'synapse_federation_client_sent_pdu_destinations:count + 0'
+      - record: 'synapse_federation_client_sent'
+        labels:
+          type: "Query"
+        expr: 'sum(synapse_federation_client_sent_queries) by (job)'
+
+      - record: 'synapse_federation_server_received'
+        labels:
+          type: "EDU"
+        expr: 'synapse_federation_server_received_edus + 0'
+      - record: 'synapse_federation_server_received'
+        labels:
+          type: "PDU"
+        expr: 'synapse_federation_server_received_pdus + 0'
+      - record: 'synapse_federation_server_received'
+        labels:
+          type: "Query"
+        expr: 'sum(synapse_federation_server_received_queries) by (job)'
+
+      - record: 'synapse_federation_transaction_queue_pending'
+        labels:
+          type: "EDU"
+        expr: 'synapse_federation_transaction_queue_pending_edus + 0'
+      - record: 'synapse_federation_transaction_queue_pending'
+        labels:
+          type: "PDU"
+        expr: 'synapse_federation_transaction_queue_pending_pdus + 0'
+
+      - record: synapse_storage_events_persisted_by_source_type
+        expr: sum without(type, origin_type, origin_entity) (synapse_storage_events_persisted_events_sep{origin_type="remote"})
+        labels:
+          type: remote
+      - record: synapse_storage_events_persisted_by_source_type
+        expr: sum without(type, origin_type, origin_entity) (synapse_storage_events_persisted_events_sep{origin_entity="*client*",origin_type="local"})
+        labels:
+          type: local
+      - record: synapse_storage_events_persisted_by_source_type
+        expr: sum without(type, origin_type, origin_entity) (synapse_storage_events_persisted_events_sep{origin_entity!="*client*",origin_type="local"})
+        labels:
+          type: bridges
+      - record: synapse_storage_events_persisted_by_event_type
+        expr: sum without(origin_entity, origin_type) (synapse_storage_events_persisted_events_sep)
+      - record: synapse_storage_events_persisted_by_origin
+        expr: sum without(type) (synapse_storage_events_persisted_events_sep)
+
+  prometheus.yml: |-
+    global:
+      scrape_interval: 5s
+      evaluation_interval: 5s
+    rule_files:
+      - /etc/prometheus/synapse-v2.rules
+    alerting:
+      alertmanagers:
+      - scheme: http
+        static_configs:
+        - targets:
+          - "synapse-master:9093"
+
+    scrape_configs:
+      # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+      - job_name: 'prometheus'
+
+        # Override the global default and scrape targets from this job every 5 seconds.
+        scrape_interval: 5s
+        scrape_timeout: 5s
+
+        # metrics_path defaults to '/metrics'
+        # scheme defaults to 'http'.
+
+        static_configs:
+          - targets: ['prometheus:9090']
+
+      - job_name: 'grafana'
+        scrape_interval: 15s
+        scrape_timeout: 5s
+        static_configs:
+          - targets: ['grafana:3000']
+      
+      - job_name: 'synapse'
+        metrics_path: '/_synapse/metrics'
+        static_configs:
+          - targets: ['synapse-master:9000']
+            labels:
+              instance: All
+              group: synapse
+              worker: main
+
+          - targets: ['matrix.envs.net:9101']
+            labels:
+              job: federation_sender
+              instance: All
+              group: synapse
+              worker: federation_sender1
+
+          - targets: ['matrix.envs.net:9101']
+            labels:
+              job: federation_sender
+              instance: All
+              group: synapse
+              worker: federation_sender2
+
+          - targets: ['matrix.envs.net:9101']
+            labels:
+              job: federation_sender
+              instance: All
+              group: synapse
+              worker: federation_sender3
+
+          - targets: ['matrix.envs.net:9091']
+            labels:
+              job: pusher
+              instance: All
+              group: synapse
+              worker: pusher
+
+          - targets: ['matrix.envs.net:9091']
+            labels:
+              job: appservice
+              instance: All
+              group: synapse
+              worker: appservice
+
+          - targets: ['matrix.envs.net:9091']
+            labels:
+              job: generic_worker
+              instance: All
+              group: synapse
+              worker: generic_worker1
+
+          - targets: ['matrix.envs.net:9091']
+            labels:
+              job: generic_worker
+              instance: All
+              group: synapse
+              worker: generic_worker2
+
+          - targets: ['matrix.envs.net:9091']
+            labels:
+              job: generic_worker
+              instance: All
+              group: synapse
+              worker: generic_worker3
+
+          - targets: ['matrix.envs.net:9091']
+            labels:
+              job: generic_worker
+              instance: All
+              group: synapse
+              worker: generic_worker4

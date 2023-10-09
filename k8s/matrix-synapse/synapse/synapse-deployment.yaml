@@ -1,0 +1,87 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synapse
+  namespace: matrix-synapse
+spec:
+  selector:
+    matchLabels:
+      app: synapse
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: synapse
+    spec:
+      containers:
+      - image: matrixdotorg/synapse:v1.82.0
+        name: synapse
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: config-volume
+          mountPath: /data/homeserver.yaml
+          subPath: homeserver.yaml
+        - name: config-volume
+          mountPath: /data/appservice-registration-irc.yaml
+          subPath: appservice-registration-irc.yaml
+        - name: config-volume
+          mountPath: /data/homeserver.signing.key
+          subPath: homeserver.signing.key
+        - name: config-volume
+          mountPath: /data/log.yaml
+          subPath: log.yaml
+        - name: media
+          mountPath: /media
+        ports:
+          - containerPort: 8008
+          - containerPort: 9093
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: synapse-pvc
+      - name: config-volume
+        configMap:
+          name: synapse-config
+      - name: media
+        persistentVolumeClaim:
+          claimName: synapse-media-pvc
+---
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synapse-lb
+  namespace: matrix-synapse
+spec:
+  selector:
+    matchLabels:
+      app: synapse-lb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: synapse-lb
+    spec:
+      containers:
+      - image: nginx:1.23.1
+        name: nginx
+        volumeMounts:
+        - name: conf
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
+        - name: conf
+          mountPath: /etc/nginx/conf.d/synapse-lb-proxy-settings.conf
+          subPath: synapse-lb-proxy-settings.conf
+      volumes:
+      - name: conf
+        configMap:
+          name: synapse-lb-config
+          items:
+          - key: synapse-lb.conf
+            path: default.conf
+          - key: synapse-lb-proxy-settings.conf
+            path: synapse-lb-proxy-settings.conf

@@ -1,0 +1,58 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: matrix-synapse
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  serviceName: redis-svc
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: redis
+        image: redis
+        resources:
+          requests:
+            cpu: 20m
+            memory: 50Mi
+        ports:
+        - containerPort: 6379
+          name: redis-port
+        volumeMounts:
+        - name: redis-storage
+          mountPath: /data
+
+  volumeClaimTemplates:
+  - metadata:
+      name: redis-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 500Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-svc
+  namespace: matrix-synapse
+  labels:
+    apps: redis
+spec:
+  type: NodePort
+  ports:
+  - name: redis-port
+    port: 6379
+    targetPort: redis-port
+    nodePort: 32133
+    protocol: TCP
+  selector:
+    app: redis

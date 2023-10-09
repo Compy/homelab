@@ -1,0 +1,26 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: 100M
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  name: docker-registry-ingress
+  namespace: registry
+spec:
+  rules:
+  - host: registry.hazenet.org
+    http:
+      paths:
+      - backend:
+          service: 
+            name: docker-registry-service
+            port: 
+              number: 5000
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - registry.hazenet.org
+    secretName: registry.hazenet.org

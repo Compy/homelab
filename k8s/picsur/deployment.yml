@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: picsur
+  name: deployment
+spec:
+  selector:
+    matchLabels:
+      component: picsur
+  replicas: 1
+  strategy:
+    type: Recreate
+
+  template:
+    metadata:
+      labels:
+        component: picsur
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/caramelfur/picsur:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+          envFrom:
+            - configMapRef:
+                name: picsur-config

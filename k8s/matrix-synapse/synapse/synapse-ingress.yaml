@@ -1,0 +1,62 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: 100M
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+  name: synapse-ingress
+  namespace: matrix-synapse
+spec:
+  rules:
+  - host: matrix.hazenet.org
+    http:
+      paths:
+      - backend:
+          service: 
+            name: synapse-lb
+            port: 
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - matrix.hazenet.org
+    secretName: matrix.hazenet.org
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: 100M
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+  name: synapse-replication-ingress
+  namespace: matrix-synapse
+spec:
+  rules:
+  - host: replication.hazenet.org
+    http:
+      paths:
+      - backend:
+          service: 
+            name: synapse-master
+            port: 
+              number: 9093
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - replication.hazenet.org
+    secretName: replication.hazenet.org
